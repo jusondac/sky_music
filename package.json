@@ -1,0 +1,38 @@
+{
+  "name": "sky-music-bot",
+  "version": "1.0.0",
+  "description": "A Discord music bot with YouTube integration and lyrics support",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "check": "node check-setup.js"
+  },
+  "keywords": [
+    "discord",
+    "music",
+    "bot",
+    "youtube",
+    "lyrics"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@discordjs/voice": "^0.18.0",
+    "discord.js": "^14.14.1",
+    "dotenv": "^16.3.1",
+    "ffmpeg-static": "^5.2.0",
+    "genius-lyrics": "^4.4.6",
+    "opusscript": "^0.0.8",
+    "play-dl": "^1.9.7",
+    "youtube-sr": "^4.3.11",
+    "yt-dlp-wrap": "^2.3.12",
+    "ytdl-core": "^4.11.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
