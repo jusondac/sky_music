@@ -31,11 +31,32 @@ class YouTubeService {
       }
 
       const video = results[0];
+
+      // Debug logging to check duration values
+      console.log(`🔍 Debug - Video duration info:`, {
+        title: video.title,
+        duration: video.duration,
+        durationInSec: video.durationInSec,
+        durationMs: video.durationMs
+      });
+
+      // Smart duration handling - the duration field contains milliseconds
+      let durationInSeconds;
+      if (video.duration) {
+        // Convert from milliseconds to seconds
+        durationInSeconds = Math.floor(video.duration / 1000);
+        console.log(`🔧 Converted duration from ${video.duration}ms to ${durationInSeconds}s`);
+      } else if (video.durationInSec) {
+        durationInSeconds = video.durationInSec;
+      } else {
+        durationInSeconds = 0;
+      }
+
       return {
         title: video.title,
         url: video.url,
-        duration: this.formatDuration(video.duration),
-        durationMs: video.durationInSec * 1000,
+        duration: this.formatDuration(durationInSeconds),
+        durationMs: durationInSeconds * 1000,
         thumbnail: video.thumbnail?.url,
         channel: video.channel?.name,
         views: video.views,
@@ -109,11 +130,16 @@ class YouTubeService {
   }
 
   formatDuration(seconds) {
-    if (!seconds || isNaN(seconds)) return '0:00';
+    // Handle various input types
+    if (!seconds && seconds !== 0) return '0:00';
 
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
+    // Convert to number if it's a string
+    const totalSeconds = parseInt(seconds);
+    if (isNaN(totalSeconds) || totalSeconds < 0) return '0:00';
+
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const secs = totalSeconds % 60;
 
     if (hours > 0) {
       return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
