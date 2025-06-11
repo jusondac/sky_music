@@ -12,7 +12,7 @@ module.exports = {
 
   async execute(interaction, bot) {
     const query = interaction.options.getString('query');
-    
+
     // Simple guild check
     if (!interaction.guildId) {
       return await interaction.reply({
@@ -29,13 +29,13 @@ module.exports = {
       cachedGuildIds: Array.from(bot.client.guilds.cache.keys()),
       guildInCache: bot.client.guilds.cache.has(interaction.guildId)
     });
-    
+
     // Use interaction.guild if available, otherwise try to get from cache
     let guild = interaction.guild;
     if (!guild) {
       guild = bot.client.guilds.cache.get(interaction.guildId);
     }
-    
+
     // If still no guild, try to fetch it
     if (!guild) {
       try {
@@ -49,12 +49,12 @@ module.exports = {
         });
       }
     }
-    
+
     try {
       // Try multiple ways to get voice state information
       const member = await guild.members.fetch(interaction.user.id);
       const voiceState = guild.voiceStates.cache.get(interaction.user.id);
-      
+
       // Debug logging to understand voice state
       console.log('🔍 Voice state debug:', {
         memberHasVoice: !!member.voice,
@@ -66,7 +66,7 @@ module.exports = {
 
       // Check voice channel using voice states cache
       const voiceChannel = voiceState?.channel || member.voice?.channel;
-      
+
       if (!voiceChannel) {
         return await interaction.reply({
           content: '❌ You need to be in a voice channel to play music!',
@@ -124,15 +124,15 @@ module.exports = {
 
     } catch (error) {
       console.error('Play command error:', error);
-      
+
       const errorMessage = `❌ Error: ${error.message}`;
-      
+
       if (interaction.deferred) {
         await interaction.editReply({ content: errorMessage });
       } else {
-        await interaction.reply({ 
-          content: errorMessage, 
-          flags: MessageFlags.Ephemeral 
+        await interaction.reply({
+          content: errorMessage,
+          flags: MessageFlags.Ephemeral
         });
       }
     }

@@ -28,9 +28,9 @@ module.exports = {
       await interaction.reply({ embeds: [embed] });
     } catch (error) {
       console.error('Bot info error:', error);
-      await interaction.reply({ 
+      await interaction.reply({
         content: `❌ Error getting bot info: ${error.message}`,
-        ephemeral: true 
+        ephemeral: true
       });
     }
   }

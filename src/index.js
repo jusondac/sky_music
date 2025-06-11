@@ -104,7 +104,7 @@ class SkyMusicBot {
 
     try {
       console.log('🔄 Refreshing slash commands...');
-      
+
       // Register commands for each guild the bot is in
       for (const guild of this.client.guilds.cache.values()) {
         await rest.put(
@@ -113,7 +113,7 @@ class SkyMusicBot {
         );
         console.log(`✅ Successfully registered slash commands for guild: ${guild.name}`);
       }
-      
+
     } catch (error) {
       console.error('❌ Error registering slash commands:', error);
     }
@@ -126,7 +126,7 @@ class SkyMusicBot {
     }
 
     const rest = new REST().setToken(process.env.DISCORD_TOKEN);
-    
+
     try {
       await rest.put(
         Routes.applicationGuildCommands(this.client.user.id, guild.id),

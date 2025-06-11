@@ -12,7 +12,7 @@ const client = new Client({
 
 client.once('ready', () => {
   const applicationId = client.user.id;
-  
+
   // Required permissions for the music bot
   const permissions = [
     'ViewChannel',      // 1024
@@ -24,7 +24,7 @@ client.once('ready', () => {
   ];
 
   // Calculate permission integer
-  const permissionValue = 
+  const permissionValue =
     1024 +       // ViewChannel
     2048 +       // SendMessages
     2147483648 + // UseSlashCommands
@@ -33,7 +33,7 @@ client.once('ready', () => {
     33554432;    // UseVAD
 
   const inviteLink = `https://discord.com/api/oauth2/authorize?client_id=${applicationId}&permissions=${permissionValue}&scope=bot%20applications.commands`;
-  
+
   console.log('\n🔗 Bot Invite Link:');
   console.log('==================');
   console.log(inviteLink);
@@ -44,7 +44,7 @@ client.once('ready', () => {
   console.log('4. Make sure all permissions are checked');
   console.log('5. Click "Authorize"');
   console.log('\n✅ Bot Application ID:', applicationId);
-  
+
   process.exit(0);
 });
 

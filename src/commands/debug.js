@@ -36,7 +36,7 @@ module.exports = {
     // Voice state information
     const member = interaction.guild?.members.cache.get(interaction.user.id);
     const voiceState = interaction.guild?.voiceStates.cache.get(interaction.user.id);
-    
+
     if (voiceState?.channel) {
       embed.addFields(
         { name: '🎤 Your Voice Channel', value: voiceState.channel.name, inline: true },
