@@ -58,7 +58,7 @@ class YouTubeService {
         duration: this.formatDuration(durationInSeconds),
         durationMs: durationInSeconds * 1000,
         thumbnail: video.thumbnail?.url,
-        channel: video.channel?.name,
+        channel: video.channel?.name || 'Unknown',
         views: video.views,
         uploadedAt: video.uploadedAt
       };
@@ -119,7 +119,7 @@ class YouTubeService {
         duration: this.formatDuration(info.duration || 0),
         durationMs: (info.duration || 0) * 1000,
         thumbnail: info.thumbnail,
-        channel: info.uploader || info.channel,
+        channel: info.uploader || info.channel || 'Unknown',
         views: info.view_count,
         description: info.description
       };

@@ -12,27 +12,78 @@ module.exports = {
 
   async execute(interaction, bot) {
     const query = interaction.options.getString('query');
-    const member = interaction.member;
-    const voiceChannel = member.voice.channel;
-
-    if (!voiceChannel) {
+    
+    // Simple guild check
+    if (!interaction.guildId) {
       return await interaction.reply({
-        content: '❌ You need to be in a voice channel to play music!',
+        content: '❌ This command can only be used in a server!',
         flags: MessageFlags.Ephemeral
       });
     }
 
-    const permissions = voiceChannel.permissionsFor(interaction.client.user);
-    if (!permissions.has(['Connect', 'Speak'])) {
-      return await interaction.reply({
-        content: '❌ I need permissions to connect and speak in your voice channel!',
-        flags: MessageFlags.Ephemeral
-      });
+    // Debug guild information
+    console.log('🔍 Guild debug:', {
+      hasGuild: !!interaction.guild,
+      guildId: interaction.guildId,
+      cachedGuilds: bot.client.guilds.cache.size,
+      cachedGuildIds: Array.from(bot.client.guilds.cache.keys()),
+      guildInCache: bot.client.guilds.cache.has(interaction.guildId)
+    });
+    
+    // Use interaction.guild if available, otherwise try to get from cache
+    let guild = interaction.guild;
+    if (!guild) {
+      guild = bot.client.guilds.cache.get(interaction.guildId);
     }
-
-    await interaction.deferReply();
-
+    
+    // If still no guild, try to fetch it
+    if (!guild) {
+      try {
+        guild = await bot.client.guilds.fetch(interaction.guildId);
+        console.log('✅ Successfully fetched guild:', guild.name);
+      } catch (error) {
+        console.error('❌ Failed to fetch guild:', error);
+        return await interaction.reply({
+          content: `❌ Bot cannot access this server. Please make sure the bot has been properly invited with the correct permissions.\n\nUse \`/botinfo\` to check bot status.`,
+          flags: MessageFlags.Ephemeral
+        });
+      }
+    }
+    
     try {
+      // Try multiple ways to get voice state information
+      const member = await guild.members.fetch(interaction.user.id);
+      const voiceState = guild.voiceStates.cache.get(interaction.user.id);
+      
+      // Debug logging to understand voice state
+      console.log('🔍 Voice state debug:', {
+        memberHasVoice: !!member.voice,
+        memberChannelId: member.voice?.channelId,
+        voiceStateExists: !!voiceState,
+        voiceStateChannelId: voiceState?.channelId,
+        voiceStateChannelName: voiceState?.channel?.name
+      });
+
+      // Check voice channel using voice states cache
+      const voiceChannel = voiceState?.channel || member.voice?.channel;
+      
+      if (!voiceChannel) {
+        return await interaction.reply({
+          content: '❌ You need to be in a voice channel to play music!',
+          flags: MessageFlags.Ephemeral
+        });
+      }
+
+      const permissions = voiceChannel.permissionsFor(interaction.client.user);
+      if (!permissions.has(['Connect', 'Speak'])) {
+        return await interaction.reply({
+          content: '❌ I need permissions to connect and speak in your voice channel!',
+          flags: MessageFlags.Ephemeral
+        });
+      }
+
+      await interaction.deferReply();
+
       let songInfo;
 
       // Check if it's a YouTube URL
@@ -73,9 +124,17 @@ module.exports = {
 
     } catch (error) {
       console.error('Play command error:', error);
-      await interaction.editReply({
-        content: `❌ Error: ${error.message}`
-      });
+      
+      const errorMessage = `❌ Error: ${error.message}`;
+      
+      if (interaction.deferred) {
+        await interaction.editReply({ content: errorMessage });
+      } else {
+        await interaction.reply({ 
+          content: errorMessage, 
+          flags: MessageFlags.Ephemeral 
+        });
+      }
     }
   }
 };
